@@ -1,0 +1,16 @@
+{
+  "name": "cr",
+  "version": "0.1.0",
+  "main": "main.js",
+  "engines": {
+    "electron": "0.30.0",
+    "atom-shell": "0.30.0"
+  },
+  "dependencies": {
+    "nodegit": "^0.4.1"
+  },
+  "devDependencies": {
+    "electron-prebuilt": "^0.30.0",
+    "electron-rebuild": "^0.2.4"
+  }
+}

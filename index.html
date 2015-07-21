@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello World!</title>
+    <style media="screen">
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      b {
+        padding: 0 10px 0 0
+      }
+    </style>
+  </head>
+  <body>
+    <div id="diff"></div>
+    <ul id="commits">
+      <!-- 31asd1313 Commit message - Duke<email>  -->
+    </ul>
+
+    <script type="text/javascript">
+    var commits = document.querySelector("#commits");
+    var open = require("nodegit").Repository.open;
+    open("/home/duke/src/ember-cli-cordova")
+    .then(function(repo) {
+      return repo.getMasterCommit();
+    })
+    .then(function(firstCommitOnMaster) {
+      var history = firstCommitOnMaster.history();
+      history.on('commit', function(commit) {
+        var author = commit.author();
+        var li = document.createElement('li');
+        var b = document.createElement("b");
+        var i = document.createElement("i");
+
+        b.appendChild(document.createTextNode(commit.sha().slice(0, 9)));
+        i.appendChild(document.createTextNode(author.name() + "<" + author.email() + ">"))
+
+        li.appendChild(b);
+        li.appendChild(document.createTextNode(commit.message().split(/(?:\r\n|\r|\n)/g)[0]));
+        li.appendChild(document.createTextNode(" - "));
+        li.appendChild(i);
+        li.addEventListener('click', function  () {
+          return this.getDiff().then(function(diffList) {
+            lines = "";
+            diffList.forEach(function(diff) {
+              diff.patches().forEach(function(patch) {
+                lines += patch.oldFile().path() + patch.newFile().path();
+                lines += "<br />";
+                patch.hunks().forEach(function(hunk) {
+                  lines += hunk.header().trim();
+                  lines += "<br />";
+                  hunk.lines().forEach(function(line) {
+                    lines += String.fromCharCode(line.origin()) + line.content().trim();
+                    lines += "<br />";
+                  });
+                });
+              });
+            });
+
+            var diff = document.querySelector('#diff');
+            diff.innerHTML = lines;
+          });
+        }.bind(commit), false);
+        commits.insertAdjacentElement('beforeend', li);
+      });
+
+      history.start();
+    });
+    </script>
+  </body>
+</html>
