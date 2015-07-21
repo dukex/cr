@@ -45,7 +45,7 @@
 
       var Firebase = require("firebase");
       var ref = new Firebase("https://intense-torch-1886.firebaseio.com/reviewed");
-    	var ipc = require('ipc');
+      var ipc = require('ipc');
 
       ipc.on('open', function(data) {
         var directory = data[0];
@@ -77,7 +77,7 @@
           })
           .then(showHistory)
         } else {
-          ref.authWithOAuthPopup("github", authHandler(folder));
+          ref.authWithOAuthPopup("github", authHandler(directory));
         }
       }
 
