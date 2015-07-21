@@ -17,8 +17,13 @@
       ul#commits b {
         padding: 0 10px 0 0;
       }
-      ul#commits span {
+      ul#commits span.author {
         color: darkblue;
+        font-size: 16px;
+      }
+
+      ul#commits span.date {
+        color: red;
         font-size: 16px;
       }
     </style>
@@ -32,6 +37,7 @@
 
     <script type="text/javascript">
     var commits = document.querySelector("#commits");
+    var moment = require('moment');
     var h = require('highlight.js');
     h.configure({useBR: true});
     var open = require("nodegit").Repository.open;
@@ -46,14 +52,20 @@
         var li = document.createElement('li');
         var b = document.createElement("b");
         var authorEl = document.createElement("span");
+        var dateEl = document.createElement("span");
 
         b.appendChild(document.createTextNode(commit.sha().slice(0, 9)));
         authorEl.appendChild(document.createTextNode(author.name()));
+        authorEl.classList.add("author");
+        dateEl.appendChild(document.createTextNode(" ("+ moment(commit.date()).fromNow() +")"));
+        dateEl.classList.add("date");
 
         li.appendChild(b);
         li.appendChild(authorEl);
         li.appendChild(document.createTextNode(" - "));
         li.appendChild(document.createTextNode(commit.message().split(/(?:\r\n|\r|\n)/g)[0]));
+        li.appendChild(dateEl);
+
         li.addEventListener('click', function  () {
           return this.getDiff().then(function(diffList) {
             lines = [];

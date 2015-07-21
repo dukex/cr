@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "highlight.js": "^8.6.0",
+    "moment": "^2.10.3",
     "nodegit": "^0.4.1"
   },
   "devDependencies": {
