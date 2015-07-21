@@ -2,16 +2,27 @@
 <html>
   <head>
     <title>Hello World!</title>
+    <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
     <style media="screen">
-      ul {
+      pre, code{
+        font-family: 'Droid Sans Mono';
+      }
+      ul#commits {
         list-style: none;
         margin: 0;
         padding: 0;
+        font-size: 18px;
+        font-family: 'Droid Sans Mono';
       }
-      b {
-        padding: 0 10px 0 0
+      ul#commits b {
+        padding: 0 10px 0 0;
+      }
+      ul#commits span {
+        color: darkblue;
+        font-size: 16px;
       }
     </style>
+    <link rel="stylesheet" href="./node_modules/highlight.js/styles/monokai_sublime.css" media="screen" title="no title" charset="utf-8">
   </head>
   <body>
     <div id="diff"></div>
@@ -21,6 +32,8 @@
 
     <script type="text/javascript">
     var commits = document.querySelector("#commits");
+    var h = require('highlight.js');
+    h.configure({useBR: true});
     var open = require("nodegit").Repository.open;
     open("/home/duke/src/ember-cli-cordova")
     .then(function(repo) {
@@ -32,35 +45,32 @@
         var author = commit.author();
         var li = document.createElement('li');
         var b = document.createElement("b");
-        var i = document.createElement("i");
+        var authorEl = document.createElement("span");
 
         b.appendChild(document.createTextNode(commit.sha().slice(0, 9)));
-        i.appendChild(document.createTextNode(author.name() + "<" + author.email() + ">"))
+        authorEl.appendChild(document.createTextNode(author.name()));
 
         li.appendChild(b);
-        li.appendChild(document.createTextNode(commit.message().split(/(?:\r\n|\r|\n)/g)[0]));
+        li.appendChild(authorEl);
         li.appendChild(document.createTextNode(" - "));
-        li.appendChild(i);
+        li.appendChild(document.createTextNode(commit.message().split(/(?:\r\n|\r|\n)/g)[0]));
         li.addEventListener('click', function  () {
           return this.getDiff().then(function(diffList) {
-            lines = "";
+            lines = [];
             diffList.forEach(function(diff) {
               diff.patches().forEach(function(patch) {
-                lines += patch.oldFile().path() + patch.newFile().path();
-                lines += "<br />";
+                lines.push("--- " +patch.oldFile().path());
+                lines.push("+++ " +patch.newFile().path());
                 patch.hunks().forEach(function(hunk) {
-                  lines += hunk.header().trim();
-                  lines += "<br />";
+                  lines.push(hunk.header());
                   hunk.lines().forEach(function(line) {
-                    lines += String.fromCharCode(line.origin()) + line.content().trim();
-                    lines += "<br />";
+                    lines.push(String.fromCharCode(line.origin()) + line.content());
                   });
                 });
               });
             });
-
             var diff = document.querySelector('#diff');
-            diff.innerHTML = lines;
+            diff.innerHTML = "<pre><code class='hljs'>" + h.highlight("diff", lines.join("\n")).value + "</code></pre>";
           });
         }.bind(commit), false);
         commits.insertAdjacentElement('beforeend', li);
