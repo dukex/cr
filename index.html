@@ -7,6 +7,9 @@
       pre, code{
         font-family: 'Droid Sans Mono';
       }
+      .hide {
+        display: none
+      }
       ul#commits {
         list-style: none;
         margin: 0;
@@ -36,60 +39,119 @@
     </ul>
 
     <script type="text/javascript">
-    var commits = document.querySelector("#commits");
-    var moment = require('moment');
-    var h = require('highlight.js');
-    h.configure({useBR: true});
-    var open = require("nodegit").Repository.open;
-    open("/home/duke/src/ember-cli-cordova")
-    .then(function(repo) {
-      return repo.getMasterCommit();
-    })
-    .then(function(firstCommitOnMaster) {
-      var history = firstCommitOnMaster.history();
-      history.on('commit', function(commit) {
-        var author = commit.author();
-        var li = document.createElement('li');
-        var b = document.createElement("b");
-        var authorEl = document.createElement("span");
-        var dateEl = document.createElement("span");
+      var moment = require('moment');
+      var h = require('highlight.js');
+      h.configure({useBR: true});
 
-        b.appendChild(document.createTextNode(commit.sha().slice(0, 9)));
-        authorEl.appendChild(document.createTextNode(author.name()));
-        authorEl.classList.add("author");
-        dateEl.appendChild(document.createTextNode(" ("+ moment(commit.date()).fromNow() +")"));
-        dateEl.classList.add("date");
+      var Firebase = require("firebase");
+      var ref = new Firebase("https://intense-torch-1886.firebaseio.com/reviewed");
+    	var ipc = require('ipc');
 
-        li.appendChild(b);
-        li.appendChild(authorEl);
-        li.appendChild(document.createTextNode(" - "));
-        li.appendChild(document.createTextNode(commit.message().split(/(?:\r\n|\r|\n)/g)[0]));
-        li.appendChild(dateEl);
+      ipc.on('open', function(data) {
+        var directory = data[0];
+        var authData = ref.getAuth();
+        openRepository(directory, authData);
+    	});
 
-        li.addEventListener('click', function  () {
-          return this.getDiff().then(function(diffList) {
-            lines = [];
-            diffList.forEach(function(diff) {
-              diff.patches().forEach(function(patch) {
-                lines.push("--- " +patch.oldFile().path());
-                lines.push("+++ " +patch.newFile().path());
-                patch.hunks().forEach(function(hunk) {
-                  lines.push(hunk.header());
-                  hunk.lines().forEach(function(line) {
-                    lines.push(String.fromCharCode(line.origin()) + line.content());
+      var authHandler = function(directory) {
+        return function(error, authData) {
+          alert(error);
+          openRepository(directory, authData);
+        }
+      }
+
+      var openRepository = function(directory, authData) {
+        if(authData) {
+          var open = require("nodegit").Repository.open;
+          open(directory)
+          .then(function(repo) {
+            return Promise.all([repo, repo.getRemote('origin')]);
+          })
+          .then(function(d){
+            var repo = d[0];
+            var remote = d[1];
+            var name = remote.url().replace(/git\@|\.git/g, "").replace(/\:|\./g, "-")
+            debugger
+            var reviewed = ref.child(authData.uid + "/" + name)
+            return Promise.all([reviewed, repo.getMasterCommit()]);
+          })
+          .then(showHistory)
+        } else {
+          ref.authWithOAuthPopup("github", authHandler(folder));
+        }
+      }
+
+      var showHistory = function(d) {
+        var reviewed = d[0];
+        var firstCommitOnMaster = d[1];
+        var history = firstCommitOnMaster.history();
+        history.on('commit', function(commit) {
+          var author = commit.author();
+          var li = document.createElement('li');
+          var b = document.createElement("b");
+          var authorEl = document.createElement("span");
+          var dateEl = document.createElement("span");
+          var reviewedEl = document.createElement('button');
+          var reviewEl = document.createElement('button');
+
+          li.id = "commit-"+ commit.sha().slice(0, 6);
+          b.appendChild(document.createTextNode(commit.sha().slice(0, 9)));
+          authorEl.appendChild(document.createTextNode(author.name()));
+          authorEl.classList.add("author");
+          dateEl.appendChild(document.createTextNode(" ("+ moment(commit.date()).fromNow() +")"));
+          dateEl.classList.add("date");
+          reviewedEl.appendChild(document.createTextNode("Reviewed"));
+          reviewEl.appendChild(document.createTextNode("Review"));
+
+          li.appendChild(b);
+          li.appendChild(authorEl);
+          li.appendChild(document.createTextNode(" - "));
+          li.appendChild(document.createTextNode(commit.message().split(/(?:\r\n|\r|\n)/g)[0]));
+          li.appendChild(dateEl);
+          li.appendChild(reviewEl);
+          li.appendChild(reviewedEl);
+          reviewedEl.addEventListener('click', function (e) {
+            reviewed.child(this.sha().slice(0, 6)).set({
+              reviewed: true
+            });
+            e.preventDefault();
+          }.bind(commit), false);
+          reviewEl.addEventListener('click', function  (e) {
+            return this.getDiff().then(function(diffList) {
+              lines = [];
+              diffList.forEach(function(diff) {
+                diff.patches().forEach(function(patch) {
+                  lines.push("--- " +patch.oldFile().path());
+                  lines.push("+++ " +patch.newFile().path());
+                  patch.hunks().forEach(function(hunk) {
+                    lines.push(hunk.header());
+                    hunk.lines().forEach(function(line) {
+                      lines.push(String.fromCharCode(line.origin()) + line.content());
+                    });
                   });
                 });
               });
+              var diff = document.querySelector('#diff');
+              diff.innerHTML = "<pre><code class='hljs'>" + h.highlight("diff", lines.join("\n")).value + "</code></pre>";
             });
-            var diff = document.querySelector('#diff');
-            diff.innerHTML = "<pre><code class='hljs'>" + h.highlight("diff", lines.join("\n")).value + "</code></pre>";
-          });
-        }.bind(commit), false);
-        commits.insertAdjacentElement('beforeend', li);
-      });
+          }.bind(commit), false);
+          commits.insertAdjacentElement('beforeend', li);
+        });
 
-      history.start();
-    });
-    </script>
+        history.start();
+        reviewed.on("value", function (snapshot) {
+          if(!snapshot.val()){
+            return
+          }
+          var data = snapshot.val();
+          Object.keys(data).forEach(function(sha){
+            var commit = document.querySelector("#commit-" + sha);
+            if(data[sha].reviewed) {
+              commit.classList.add('hide');
+            }
+          })
+        })
+      };
+      </script>
   </body>
 </html>
