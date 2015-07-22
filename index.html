@@ -3,13 +3,64 @@
   <head>
     <title>Hello World!</title>
     <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style media="screen">
       pre, code{
         font-family: 'Droid Sans Mono';
       }
-      .hide {
+      li {
+        padding: 5px 10px;
+        height: 30px;
+        line-height: 2
+      }
+      li.reviewed {
+        opacity: 0.6;
+        text-decoration: line-through;
+      }
+      li.reviewed::before{
+        content: "done";
+        color: green;
+        font-family: 'Material Icons';
+        text-rendering: optimizeLegibility;
+        font-feature-settings: "liga" 1;
+        font-style: normal;
+        text-transform: none;
+        line-height: 1;
+        display: inline-block;
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button.reviewed, button.review, button.unreview {
+        border: 1px solid green;
+        background-color: #FFF;
+        color: rgb(48, 134, 5);
+        border-radius: 5px;
+        margin: 0 5px;
+      }
+
+      button.review {
+        border: 1px solid blue;
+        color: rgb(22, 60, 134);
+      }
+
+      button.unreview {
+        border: 1px solid red;
+        color: rgb(134, 13, 22);
+      }
+
+      li.reviewed button.reviewed, li.reviewed button.review {
         display: none
       }
+
+      button.unreview {
+        display: none;
+      }
+
+      li.reviewed button.unreview {
+        display: inline-block;
+      }
+
       ul#commits {
         list-style: none;
         margin: 0;
@@ -51,12 +102,15 @@
         var directory = data[0];
         var authData = ref.getAuth();
         openRepository(directory, authData);
-    	});
+      });
 
       var authHandler = function(directory) {
         return function(error, authData) {
-          alert(error);
-          openRepository(directory, authData);
+          if (error && error.code === "TRANSPORT_UNAVAILABLE") {
+            alert(error);
+          } else {
+            openRepository(directory, authData);
+          }
         }
       }
 
@@ -71,13 +125,13 @@
             var repo = d[0];
             var remote = d[1];
             var name = remote.url().replace(/git\@|\.git/g, "").replace(/\:|\./g, "-")
-            debugger
             var reviewed = ref.child(authData.uid + "/" + name)
             return Promise.all([reviewed, repo.getMasterCommit()]);
           })
           .then(showHistory)
         } else {
-          ref.authWithOAuthPopup("github", authHandler(directory));
+          // ref.authWithOAuthPopup("github", authHandler(directory));
+          authHandler(directory)(null, {uid: "dukex"})
         }
       }
 
@@ -93,6 +147,7 @@
           var dateEl = document.createElement("span");
           var reviewedEl = document.createElement('button');
           var reviewEl = document.createElement('button');
+          var unreviewEl = document.createElement('button');
 
           li.id = "commit-"+ commit.sha().slice(0, 6);
           b.appendChild(document.createTextNode(commit.sha().slice(0, 9)));
@@ -100,8 +155,15 @@
           authorEl.classList.add("author");
           dateEl.appendChild(document.createTextNode(" ("+ moment(commit.date()).fromNow() +")"));
           dateEl.classList.add("date");
-          reviewedEl.appendChild(document.createTextNode("Reviewed"));
-          reviewEl.appendChild(document.createTextNode("Review"));
+          reviewedEl.appendChild(document.createTextNode("thumb_up"));
+          reviewedEl.classList.add("material-icons");
+          reviewedEl.classList.add("reviewed");
+          reviewEl.appendChild(document.createTextNode("search"));
+          reviewEl.classList.add("material-icons");
+          reviewEl.classList.add('review');
+          unreviewEl.appendChild(document.createTextNode("thumb_down"));
+          unreviewEl.classList.add("material-icons");
+          unreviewEl.classList.add('unreview');
 
           li.appendChild(b);
           li.appendChild(authorEl);
@@ -110,6 +172,7 @@
           li.appendChild(dateEl);
           li.appendChild(reviewEl);
           li.appendChild(reviewedEl);
+          li.appendChild(unreviewEl);
           reviewedEl.addEventListener('click', function (e) {
             reviewed.child(this.sha().slice(0, 6)).set({
               reviewed: true
@@ -133,6 +196,7 @@
               });
               var diff = document.querySelector('#diff');
               diff.innerHTML = "<pre><code class='hljs'>" + h.highlight("diff", lines.join("\n")).value + "</code></pre>";
+              window.scroll(0, 0)
             });
           }.bind(commit), false);
           commits.insertAdjacentElement('beforeend', li);
@@ -147,7 +211,7 @@
           Object.keys(data).forEach(function(sha){
             var commit = document.querySelector("#commit-" + sha);
             if(data[sha].reviewed) {
-              commit.classList.add('hide');
+              commit && commit.classList.add('reviewed');
             }
           })
         })

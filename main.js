@@ -16,16 +16,13 @@ app.on('window-all-closed', function() {
 app.on('ready', function() {
   mainWindow = new BrowserWindow({width: 800, height: 800});
 
-  // and load the index.html of the app.
   mainWindow.loadUrl('file://' + __dirname + '/index.html');
 
-  mainWindow.openDevTools();
+  // mainWindow.openDevTools();
   mainWindow.webContents.on('did-finish-load', function() {
     var dialog = require('dialog');
      mainWindow.webContents.send('open', dialog.showOpenDialog({ properties: [ 'openDirectory' ]}));
    });
-
-
 
   mainWindow.on('closed', function() {
     mainWindow = null;
