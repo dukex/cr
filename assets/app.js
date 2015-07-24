@@ -105,7 +105,8 @@ function data(commit) {
     sha: commit.sha(),
     sha_short: commit.sha().slice(0, 5),
     author: commit.author().name(),
-    message: commit.message().split(/(?:\r\n|\r|\n)/g)[0],
+    message: commit.message(),
+    message_shot: commit.message().split(/(?:\r\n|\r|\n)/g)[0],
     date: moment(commit.date()).fromNow()
   }
 }

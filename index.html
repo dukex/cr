@@ -94,7 +94,7 @@
             <b>{{sha_short}}</b>
             <span class="author">{{author}}</span>
             -
-            {{message}}
+            {{message_shot}}
             <span class="date">{{date}}</span>
 
             <button>Mark as reviewed</button>
@@ -106,7 +106,15 @@
 
     <script id="commit-template" type="text/x-handlebars-template">
       <button onclick="App.commitsFn()">Voltar</button>
-      {{commit.sha}}
+      <h1>
+        <b>{{commit.sha_short}}</b>
+        <span class="author">{{commit.author}}</span>
+        -
+        {{commit.message}}
+        <span class="date">{{commit.date}}</span>
+
+        <button>Mark as reviewed</button>
+      </h1>
     </script>
 
     <script type="text/javascript">
