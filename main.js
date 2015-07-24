@@ -18,11 +18,11 @@ app.on('ready', function() {
 
   mainWindow.loadUrl('file://' + __dirname + '/index.html');
 
-  // mainWindow.openDevTools();
+  mainWindow.openDevTools();
   mainWindow.webContents.on('did-finish-load', function() {
     var dialog = require('dialog');
-     mainWindow.webContents.send('open', dialog.showOpenDialog({ properties: [ 'openDirectory' ]}));
-   });
+    mainWindow.webContents.send('open', dialog.showOpenDialog({ properties: [ 'openDirectory' ]}));
+  });
 
   mainWindow.on('closed', function() {
     mainWindow = null;

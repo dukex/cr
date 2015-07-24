@@ -1,0 +1,75 @@
+    /*pre, code{
+        font-family: 'Droid Sans Mono';
+      }
+      li {
+        padding: 5px 10px;
+        height: 30px;
+        line-height: 2
+      }
+      li.reviewed {
+        opacity: 0.6;
+        text-decoration: line-through;
+      }
+      li.reviewed::before{
+        content: "done";
+        color: green;
+        font-family: 'Material Icons';
+        text-rendering: optimizeLegibility;
+        font-feature-settings: "liga" 1;
+        font-style: normal;
+        text-transform: none;
+        line-height: 1;
+        display: inline-block;
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button.reviewed, button.review, button.unreview {
+        border: 1px solid green;
+        background-color: #FFF;
+        color: rgb(48, 134, 5);
+        border-radius: 5px;
+        margin: 0 5px;
+      }
+
+      button.review {
+        border: 1px solid blue;
+        color: rgb(22, 60, 134);
+      }
+
+      button.unreview {
+        border: 1px solid red;
+        color: rgb(134, 13, 22);
+      }
+
+      li.reviewed button.reviewed, li.reviewed button.review {
+        display: none
+      }
+
+      button.unreview {
+        display: none;
+      }
+
+      li.reviewed button.unreview {
+        display: inline-block;
+      }
+
+      ul#commits {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        font-size: 18px;
+        font-family: 'Droid Sans Mono';
+      }
+      ul#commits b {
+        padding: 0 10px 0 0;
+      }
+      ul#commits span.author {
+        color: darkblue;
+        font-size: 16px;
+      }
+
+      ul#commits span.date {
+        color: red;
+        font-size: 16px;
+      }*/
