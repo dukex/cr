@@ -7,6 +7,7 @@ var mainWindow = null;
 process.on('error', function(err) {
   console.log(err);
 });
+
 app.on('window-all-closed', function() {
   if (process.platform != 'darwin') {
     app.quit();

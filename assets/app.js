@@ -19,7 +19,12 @@ App.commitsFn = function () {
 
 App.commit = {
   model: function (query) {
-    return Promise.resolve(App._commits[query.id]);
+    var commit = App._commits[query.id];
+    commit.cacheKey = query.id;
+    return diff(commit).then(function (files) {
+      commit.files = files
+      return commit;
+    });
   },
   setup: function (commit) {
     renderTemplate('commit', '#app', {commit: data(commit)});
@@ -68,8 +73,7 @@ function setProjectName(data) {
 
 function buildCommitTree(data) {
   var repository = data[0];
-  return repository.getBranchCommit('master')
-    .then(buildHistory);
+  return repository.getBranchCommit('estacio').then(buildHistory);
 }
 
 function buildHistory(branch) {
@@ -107,13 +111,65 @@ function data(commit) {
     author: commit.author().name(),
     message: commit.message(),
     message_shot: commit.message().split(/(?:\r\n|\r|\n)/g)[0],
-    date: moment(commit.date()).fromNow()
+    date: moment(commit.date()).fromNow(),
+    files: commit.files || []
   }
 }
-
 
 function cacheCommits(commits) {
   commits.forEach(function (commits) {
     App._commits[commits.sha()] = commits;
   });
 }
+
+
+var createDiffToCommit = function (commit) {
+  return commit.getDiff().then(function(diffList) {
+    var files = [];
+    diffList.forEach(function(diff) {
+      diff.patches().forEach(function(patch) {
+        var file = {
+          diff: [],
+          name: patch.oldFile().path()
+        }
+        file.diff.push("--- " + patch.oldFile().path() );
+        file.diff.push("+++ " + patch.newFile().path() );
+        patch.hunks().forEach(function(hunk) {
+          file.diff.push(hunk.header());
+          hunk.lines().forEach(function(line) {
+            file.diff.push(String.fromCharCode(line.origin()) + line.content());
+          });
+        });
+        file.diffText = file.diff.join("\n")
+        files.push(file);
+      });
+    });
+    return files
+  });
+};
+
+
+var memoize = function(f) {
+  var cache = {};
+
+  return function() {
+    var cacheKey = arguments[0].cacheKey;
+    cache[cacheKey] = cache[cacheKey] ? Promise.resolve(cache[cacheKey]) : f.apply(f, arguments);
+    return cache[cacheKey];
+  };
+};
+
+var diff = memoize(createDiffToCommit);
+
+Handlebars.registerHelper('debug', function() {
+  console.log(arguments);
+});
+
+var h = require('highlight.js');
+h.configure({useBR: true});
+
+Handlebars.registerHelper('highlight', function(diff) {
+  var result = "<pre><code class='hljs'>" + h.highlight("diff", diff).value + "</code></pre>";
+
+  return new Handlebars.SafeString(result);
+});
