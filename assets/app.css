@@ -1,3 +1,7 @@
+li.reviewed {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
     /*pre, code{
         font-family: 'Droid Sans Mono';
       }
@@ -6,10 +10,7 @@
         height: 30px;
         line-height: 2
       }
-      li.reviewed {
-        opacity: 0.6;
-        text-decoration: line-through;
-      }
+
       li.reviewed::before{
         content: "done";
         color: green;

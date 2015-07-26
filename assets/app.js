@@ -1,3 +1,6 @@
+var PouchDB = require('pouchdb');
+PouchDB.debug.enable('*');
+
 var router = new Router['default']();
 
 router.map(function(match) {
@@ -7,6 +10,7 @@ router.map(function(match) {
 
 var App = {}
 App.directory = null;
+App.db = null
 App._commits = {};
 
 App.reviewFn = function (sha) {
@@ -43,7 +47,22 @@ App.commits = {
       }) : Object.keys(App._commits).map(function (key) { return App._commits[key] });
   },
   setup: function (commits) {
-    renderTemplate('commits', '#app', {commits: commits.map(function(c) { return data(c); })});
+    var el = renderTemplate('commits', '#app', {commits: commits.map(function(c) { return data(c); })});
+debugger
+    var buttons = el.querySelectorAll('button.js-mark-as-reviewed');
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function(e) {
+        var id = e.currentTarget.dataset.id;
+        App._commits[ id ].reviewed = true;
+        item = document.querySelector('.commit-'+id);
+        item.classList.add('reviewed');
+
+        App.db.put({
+          _id: id,
+          createdAt: new Date()
+        });
+      }, false);
+    }
   }
 };
 
@@ -51,8 +70,10 @@ router.getHandler = function(name) {
   return App[name];
 };
 
-function startApp(el, directory) {
+function startApp(directory) {
   App.directory = directory;
+  App.db = new PouchDB('reviews');
+
   router.handleURL("/commits");
 }
 
@@ -73,7 +94,7 @@ function setProjectName(data) {
 
 function buildCommitTree(data) {
   var repository = data[0];
-  return repository.getBranchCommit('estacio').then(buildHistory);
+  return repository.getBranchCommit('master').then(buildHistory);
 }
 
 function buildHistory(branch) {
@@ -85,7 +106,16 @@ function buildHistory(branch) {
     });
 
     history.on('end', function (commits) {
-      resolve(commits);
+      App.db.allDocs().then(function(data){
+        debugger
+        var ids = data.rows.map(function (c) { return c.id; });
+        for (var i = 0; i < commits.length; i++) {
+          var commit = commits[i];
+          commits[i].reviewed = ids.indexOf(commit.sha()) > -1;
+        }
+
+        resolve(commits);
+      });
     });
 
     history.start();
@@ -102,6 +132,7 @@ function renderTemplate(template, to, data) {
   var target = document.querySelector(to);
   while (target.firstChild) target.removeChild(target.firstChild);
   target.insertAdjacentHTML('beforeend', html);
+  return target.firstElementChild;
 }
 
 function data(commit) {
@@ -112,7 +143,8 @@ function data(commit) {
     message: commit.message(),
     message_shot: commit.message().split(/(?:\r\n|\r|\n)/g)[0],
     date: moment(commit.date()).fromNow(),
-    files: commit.files || []
+    files: commit.files || [],
+    reviewed: commit.reviewed
   }
 }
 

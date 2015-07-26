@@ -14,14 +14,13 @@
     <script id="commits-template" type="text/x-handlebars-template">
       <ul id="commits">
         {{#each commits}}
-          <li id="commit-{{sha}}">
+          <li id="commit-{{sha}}" class="{{if reviewed}}reviewed{{/if}}">
             <b>{{sha_short}}</b>
             <span class="author">{{author}}</span>
             -
             {{message_shot}}
             <span class="date">{{date}}</span>
-
-            <button>Mark as reviewed</button>
+            <button class="js-mark-as-reviewed" data-id="{{sha}}">Mark as reviewed</button>
             <button>Delay review</button>
             <button onclick="App.reviewFn('{{sha}}')">Review</button>
           </li>
@@ -49,24 +48,21 @@
     </script>
 
     <script type="text/javascript">
-      window.RSVP = require('./assets/rsvp.js');
-      window.RouteRecognizer = require('./assets/route-recognizer.js');
+      window.RSVP = require('./assets/vendor/rsvp.js');
+      window.RouteRecognizer = require('./assets/vendor/route-recognizer.js');
     </script>
 
-    <script src="assets/handlebars.js" charset="utf-8"></script>
-    <script src="assets/router.js" charset="utf-8"></script>
+    <script src="assets/vendor/handlebars.js" charset="utf-8"></script>
+    <script src="assets/vendor/router.js" charset="utf-8"></script>
     <script src="assets/app.js" charset="utf-8"></script>
 
     <script type="text/javascript">
       var moment = require('moment');
 
-      var Firebase = require("firebase");
-      var ref = new Firebase("https://intense-torch-1886.firebaseio.com/reviewed");
       var ipc = require('ipc');
-
       ipc.on('open', function(data) {
         var directory = data[0];
-        startApp("#app", directory);
+        startApp(directory);
       });
       // var showHistory = function(d) {
       //   history.on('commit', function(commit) {
