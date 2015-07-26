@@ -1,3 +1,5 @@
 window.onload = function() {
-  require('./main')
+  var Main = require('./main')
+  var element = new Main().getElement()
+  document.body.appendChild(element)
 }

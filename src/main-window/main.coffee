@@ -1,3 +1,9 @@
-div = document.createElement('div')
-div.textContent = 'HELLO'
-document.body.appendChild(div)
+
+module.exports =
+class Main
+  constructor: ->
+    @element = document.createElement('div')
+    @element.textContent = 'HELLO'
+
+  getElement: ->
+    @element
