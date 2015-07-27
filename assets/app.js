@@ -10,16 +10,8 @@ router.map(function(match) {
 
 var App = {}
 App.directory = null;
-App.db = null
+App.reviews = null
 App._commits = {};
-
-App.reviewFn = function (sha) {
-  router.handleURL("/commits/" + sha);
-};
-
-App.commitsFn = function () {
-  router.handleURL("/commits");
-}
 
 App.commit = {
   model: function (query) {
@@ -31,7 +23,7 @@ App.commit = {
     });
   },
   setup: function (commit) {
-    renderTemplate('commit', '#app', {commit: data(commit)});
+    render('commit', '#app', {commit: data(commit)});
   }
 };
 
@@ -47,22 +39,23 @@ App.commits = {
       }) : Object.keys(App._commits).map(function (key) { return App._commits[key] });
   },
   setup: function (commits) {
-    var el = renderTemplate('commits', '#app', {commits: commits.map(function(c) { return data(c); })});
-debugger
-    var buttons = el.querySelectorAll('button.js-mark-as-reviewed');
-    for (var i = 0; i < buttons.length; i++) {
-      buttons[i].addEventListener('click', function(e) {
-        var id = e.currentTarget.dataset.id;
-        App._commits[ id ].reviewed = true;
-        item = document.querySelector('.commit-'+id);
-        item.classList.add('reviewed');
-
-        App.db.put({
-          _id: id,
-          createdAt: new Date()
+    var commits = commits.map(function(c) { return data(c); });
+    render('commits', '#app', {commits: commits}, function (template) {
+      template.on('review', function (e) {
+        router.handleURL("/commits/" + e.context.sha);
+      });
+      template.on('delay', function (e) {
+      });
+      template.on('reviewed', function (e) {
+          router.handleURL("/commits/" + e.context.sha);
+          App.reviews.put({
+            _id: id,
+            createdAt: new Date(), // check if exists
+            updatedAt: new Date(),
+            reviewed: true
+          });
         });
-      }, false);
-    }
+    });
   }
 };
 
@@ -72,7 +65,7 @@ router.getHandler = function(name) {
 
 function startApp(directory) {
   App.directory = directory;
-  App.db = new PouchDB('reviews');
+  App.reviews = new PouchDB('reviews');
 
   router.handleURL("/commits");
 }
@@ -106,8 +99,7 @@ function buildHistory(branch) {
     });
 
     history.on('end', function (commits) {
-      App.db.allDocs().then(function(data){
-        debugger
+      App.reviews.allDocs().then(function(data){
         var ids = data.rows.map(function (c) { return c.id; });
         for (var i = 0; i < commits.length; i++) {
           var commit = commits[i];
@@ -126,13 +118,20 @@ function _name(remote) {
   return remote.url().replace(/git\@|\.git/g, "").replace(/\:|\./g, "-")
 }
 
-function renderTemplate(template, to, data) {
-  var source = document.querySelector("#" + template + "-template").innerHTML;
-  var html = Handlebars.compile(source)(data);
+function render(template, to, data, fn) {
   var target = document.querySelector(to);
   while (target.firstChild) target.removeChild(target.firstChild);
-  target.insertAdjacentHTML('beforeend', html);
-  return target.firstElementChild;
+
+  return new Ractive({
+      el: to,
+      template: '#' + template + '-template',
+      data: data,
+      oninit: function () {
+        if(typeof fn === 'function'){
+          fn(this);
+        }
+      }
+    });
 }
 
 function data(commit) {
@@ -193,15 +192,10 @@ var memoize = function(f) {
 
 var diff = memoize(createDiffToCommit);
 
-Handlebars.registerHelper('debug', function() {
-  console.log(arguments);
-});
-
-var h = require('highlight.js');
-h.configure({useBR: true});
-
-Handlebars.registerHelper('highlight', function(diff) {
-  var result = "<pre><code class='hljs'>" + h.highlight("diff", diff).value + "</code></pre>";
-
-  return new Handlebars.SafeString(result);
-});
+// var h = require('highlight.js');
+// h.configure({useBR: true});
+// Handlebars.registerHelper('highlight', function(diff) {
+//   var result = "<pre><code class='hljs'>" + h.highlight("diff", diff).value + "</code></pre>";
+//
+//   return new Handlebars.SafeString(result);
+// });

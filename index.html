@@ -11,25 +11,25 @@
     <div id="app">
     </div>
 
-    <script id="commits-template" type="text/x-handlebars-template">
+    <script id="commits-template" type="text/ractive">
       <ul id="commits">
-        {{#each commits}}
-          <li id="commit-{{sha}}" class="{{if reviewed}}reviewed{{/if}}">
+        {{#commits}}
+          <li id="commit-{{sha}}" class='{{ reviewed ? "reviewed" : "" }}'>
             <b>{{sha_short}}</b>
             <span class="author">{{author}}</span>
             -
             {{message_shot}}
             <span class="date">{{date}}</span>
-            <button class="js-mark-as-reviewed" data-id="{{sha}}">Mark as reviewed</button>
-            <button>Delay review</button>
-            <button onclick="App.reviewFn('{{sha}}')">Review</button>
+            <button on-click="reviewed" data-id="{{sha}}">Mark as reviewed</button>
+            <button on-click="delay">Delay review</button>
+            <button on-click="review">Review</button>
           </li>
         {{/each}}
       </ul>
     </script>
 
     <script id="commit-template" type="text/x-handlebars-template">
-      <button onclick="App.commitsFn()">Voltar</button>
+      <button on-click="back">Voltar</button>
       <h1>
         <b>{{commit.sha_short}}</b>
         <span class="author">{{commit.author}}</span>
@@ -40,10 +40,9 @@
         <button>Mark as reviewed</button>
       </h1>
 
-      {{debug commit}}
-      {{#each commit.files}}
+      {{#commit.files}}
         <h3>{{name}}</h3>
-        {{highlight diffText}}
+        {{diffText}}
       {{/each}}
     </script>
 
@@ -52,7 +51,7 @@
       window.RouteRecognizer = require('./assets/vendor/route-recognizer.js');
     </script>
 
-    <script src="assets/vendor/handlebars.js" charset="utf-8"></script>
+    <script src="assets/vendor/ractive.js" charset="utf-8"></script>
     <script src="assets/vendor/router.js" charset="utf-8"></script>
     <script src="assets/app.js" charset="utf-8"></script>
 
