@@ -82,14 +82,15 @@ CommitsController = (function(superClass) {
     },
 
     all_reviewed: function (e) {
-      for (var i = 0; i < e.context.commits.length; i++) {
-        this.reviewed(e.context.commits[i].sha);
+      var commits = e.context.filter(e.context.commits, e.context.search)
+      for (var i = 0; i < commits.length; i++) {
+        this.reviewed(commits[i].sha);
       }
     }
   }
 
   CommitsController.prototype.defaultData = {
-    showReviewed: true
+    search: "reviewed: false"
   };
 
   CommitsController.prototype.reviewed = function (sha) {
@@ -109,14 +110,32 @@ CommitsController = (function(superClass) {
   }
 
   CommitsController.prototype.helpers = {
-    filter: function (commits, showReviewed) {
-      var f = function (commit) {
-        if(commit.reviewed && !showReviewed){
-          return false
+    filter: function (commits, search) {
+      var f = function () {
+        if(search && search.split(':').length > 1) {
+          var attrs = {}
+          var queries = search.split(',');
+          for (var i = 0; i < queries.length; i++) {
+            q = queries[i].split(':');
+            attrs[q[0].trim()] = q[1].trim();
+          }
+
+          return function (commit) {
+            var results = [];
+            Object.keys(attrs).forEach(function (attr) {
+              results.push(commit[attr].toString() === attrs[attr])
+            });
+            for (var i = 0; i < results.length; i++) {
+              if(!results[i])
+                return false
+            }
+            return true;
+          }
+        } else {
+          return function() { return true }
         }
-        return true
       }
-      return commits.slice().filter(f);
+      return commits.slice().filter(f());
     }
   }
   CommitsController.prototype.commits = function () {
