@@ -1,11 +1,6 @@
 var PouchDB = require('pouchdb');
 PouchDB.debug.enable('*');
 
-
-
-
-
-
 var App = {
   handler: function (name){
     return new Function('return new ' + name.titleize() + 'Controller()')();

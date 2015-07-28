@@ -9,6 +9,7 @@ BaseController = (function() {
   BaseController.prototype.to = "#app";
 
   BaseController.prototype.actions = {};
+  BaseController.prototype.helpers = {};
 
   BaseController.prototype.cache = function () {
     var store = App.cache[this.name];
@@ -24,8 +25,12 @@ BaseController = (function() {
       var target = document.querySelector(this.to);
       while (target.firstChild) target.removeChild(target.firstChild);
 
-      var data = {};
+      var data = controller.defaultData || {};
       data[this.name] = model;
+
+      Object.keys(controller.helpers).forEach(function(helper){
+        data[helper] = controller.helpers[helper]
+      });
 
       return new Ractive({
           el: this.to,
@@ -70,14 +75,50 @@ CommitsController = (function(superClass) {
     },
 
     delay: function () {
-      debugger;
     },
 
-    reviewed: function () {
-      debugger;
+    reviewed: function (e) {
+      this.reviewed(e.context.sha);
+    },
+
+    all_reviewed: function (e) {
+      for (var i = 0; i < e.context.commits.length; i++) {
+        this.reviewed(e.context.commits[i].sha);
+      }
     }
   }
 
+  CommitsController.prototype.defaultData = {
+    showReviewed: true
+  };
+
+  CommitsController.prototype.reviewed = function (sha) {
+    App.reviews.put({
+      _id: sha,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+
+    // var commits = this.store.get('commits');
+    // for (var i = 0; i < commits.length; i++) {
+    //   if(commits[i].sha === sha) {
+    //     this.store.set('commits.' + i + '.reviewed', true)
+    //     return;
+    //   }
+    // }
+  }
+
+  CommitsController.prototype.helpers = {
+    filter: function (commits, showReviewed) {
+      var f = function (commit) {
+        if(commit.reviewed && !showReviewed){
+          return false
+        }
+        return true
+      }
+      return commits.slice().filter(f);
+    }
+  }
   CommitsController.prototype.commits = function () {
     var _this = this;
     var open = require("nodegit").Repository.open;

@@ -12,9 +12,13 @@
     </div>
 
     <script id="commits-template" type="text/ractive">
+      <button on-click="all_reviewed">Mark all as reviewed</button>
+      <label>
+      <input type="checkbox" checked='{{showReviewed}}'> Show Reviewed
+      </label>
       <ul id="commits">
-        {{#commits}}
-          <li id="commit-{{sha}}" class='{{ reviewed ? "reviewed" : "" }}'>
+        {{#each filter(commits, showReviewed) :index}}
+          <li id="commit-{{sha}}" data-i='{{index}}' class='{{ reviewed ? "reviewed" : "" }}'>
             <b>{{sha_short}}</b>
             <span class="author">{{author}}</span>
             -
@@ -40,9 +44,18 @@
         <button>Mark as reviewed</button>
       </h1>
 
+      <ul>
       {{#commit.files}}
-        <h3>{{name}}</h3>
-        {{diffText}}
+        <li><a href="#file-{{name}}">{{name}}</a></li>
+      {{/each}}
+      </ul>
+
+      <ul>
+      {{#commit.files}}
+        <li id="file-{{name}}">
+          <h3>{{name}}</h3>
+          {{diffText}}
+        </li>
       {{/each}}
     </script>
 
