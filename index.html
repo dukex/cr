@@ -14,8 +14,9 @@
     <script id="commits-template" type="text/ractive">
       <button on-click="all_reviewed">Mark all as reviewed</button>
       <label>
-      <input value='{{search}}' type="text">
-      Filters, ex: 'reviewed: true' can combine using coma(,) 'reviewed: true, author: Duke'
+        Filters
+        <input value='{{search}}' type="text">
+        ex: 'reviewed: true' can combine using coma(,) 'reviewed: true, author: Duke'
       </label>
       <ul id="commits">
         {{#each filter(commits, search) :index}}
@@ -26,7 +27,6 @@
             {{message_shot}}
             <span class="date">{{date}}</span>
             <button on-click="reviewed" data-id="{{sha}}">Mark as reviewed</button>
-            <button on-click="delay">Delay review</button>
             <button on-click="review">Review</button>
           </li>
         {{/each}}

@@ -7,7 +7,7 @@ BaseController = (function() {
   function BaseController() {}
 
   BaseController.prototype.to = "#app";
-
+  BaseController.prototype.store = null;
   BaseController.prototype.actions = {};
   BaseController.prototype.helpers = {};
 
@@ -48,11 +48,11 @@ BaseController = (function() {
   }
 
   BaseController.prototype.setupController = function () {
-
   };
 
   BaseController.prototype.setup = function (data) {
-    this.render(data);
+    this.store = this.render(data);
+    this.setupController();
   };
 
   return BaseController;
@@ -74,7 +74,7 @@ CommitsController = (function(superClass) {
       router.handleURL("/commits/" + e.context.sha);
     },
 
-    delay: function () {
+    delayed: function () {
     },
 
     reviewed: function (e) {
@@ -100,13 +100,13 @@ CommitsController = (function(superClass) {
       updatedAt: new Date()
     });
 
-    // var commits = this.store.get('commits');
-    // for (var i = 0; i < commits.length; i++) {
-    //   if(commits[i].sha === sha) {
-    //     this.store.set('commits.' + i + '.reviewed', true)
-    //     return;
-    //   }
-    // }
+    var commits = this.store.get('commits');
+    for (var i = 0; i < commits.length; i++) {
+      if(commits[i].sha === sha) {
+        this.store.set('commits.' + i + '.reviewed', true)
+        return;
+      }
+    }
   }
 
   CommitsController.prototype.helpers = {
@@ -123,7 +123,9 @@ CommitsController = (function(superClass) {
           return function (commit) {
             var results = [];
             Object.keys(attrs).forEach(function (attr) {
-              results.push(commit[attr].toString() === attrs[attr])
+              q = attrs[attr]
+              starts = commit[attr].toString().slice(0, q.length)
+              results.push(starts === q)
             });
             for (var i = 0; i < results.length; i++) {
               if(!results[i])
@@ -137,25 +139,26 @@ CommitsController = (function(superClass) {
       }
       return commits.slice().filter(f());
     },
-
   }
 
   CommitsController.prototype.commits = function () {
     var _this = this;
     var open = require("nodegit").Repository.open;
+    console.time('commits');
     return open(App.directory).then(function (repository) {
              return repository.getBranchCommit('master');
            }).then(function (branch) {
              return new Promise(function (resolve) {
-               var history = branch.history();
+               App.reviews.allDocs().then(function(data){
+                 var ids = data.rows.map(function (c) { return c.id; });
+                 var history = branch.history();
 
-               history.on('commit', function (commit) {
-                 console.log("processed #" + commit.sha());
-               });
+                 history.on('commit', function (commit) {
+                   commit.reviewed = ids.indexOf(commit.sha()) > -1
+                   _this.store.push('commits', _this._data(commit));
+                 });
 
-               history.on('end', function (commits) {
-                 App.reviews.allDocs().then(function(data){
-                   var ids = data.rows.map(function (c) { return c.id; });
+                 history.on('end', function (commits) {
                    for (var i = 0; i < commits.length; i++) {
                      var commit = commits[i];
                      commits[i].reviewed = ids.indexOf(commit.sha()) > -1;
@@ -163,20 +166,28 @@ CommitsController = (function(superClass) {
 
                    resolve(commits);
                  });
-               });
 
-               history.start();
+                 history.start();
+              });
              });
            }).then(function (commits) {
              commits.forEach(function (commit) {
                App.cache.commits[commit.sha()] = commit;
              });
+
+             console.timeEnd('commits');
              return commits.map(_this._data);
            });
   }
 
   CommitsController.prototype.model = function() {
-    return this._isCache() ? this.cache().map(this._data) : this.commits();
+    return this._isCache() ? this.cache().map(this._data) : [];
+  };
+
+  CommitsController.prototype.setupController = function () {
+    if(!this._isCache()){
+      this.commits();
+    }
   };
 
   CommitsController.prototype._data = function(commit) {
@@ -224,8 +235,8 @@ CommitController = (function(superClass) {
 
   CommitController.prototype.helpers = {
     highlight: function (diff) {
-        var h = require('highlight.js');
-  h.configure({useBR: true});
+      var h = require('highlight.js');
+      h.configure({useBR: true});
       return "<pre><code class='hljs'>" + h.highlight("diff", diff).value + "</code></pre>";
     }
   }
@@ -243,7 +254,5 @@ CommitController = (function(superClass) {
     }
   };
 
-
   return CommitController;
-
 })(BaseController);
