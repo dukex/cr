@@ -15,7 +15,7 @@
       <button on-click="all_reviewed">Mark all as reviewed</button>
       <label>
       <input value='{{search}}' type="text">
-      Filters, ex: 'reviewed: true' can combine using coma(,) 'reviewed:true author:Duke'
+      Filters, ex: 'reviewed: true' can combine using coma(,) 'reviewed: true, author: Duke'
       </label>
       <ul id="commits">
         {{#each filter(commits, search) :index}}
