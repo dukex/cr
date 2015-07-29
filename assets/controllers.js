@@ -136,8 +136,10 @@ CommitsController = (function(superClass) {
         }
       }
       return commits.slice().filter(f());
-    }
+    },
+
   }
+
   CommitsController.prototype.commits = function () {
     var _this = this;
     var open = require("nodegit").Repository.open;
@@ -217,6 +219,14 @@ CommitController = (function(superClass) {
   CommitController.prototype.actions = {
     back: function () {
       router.handleURL('/commits');
+    }
+  }
+
+  CommitController.prototype.helpers = {
+    highlight: function (diff) {
+        var h = require('highlight.js');
+  h.configure({useBR: true});
+      return "<pre><code class='hljs'>" + h.highlight("diff", diff).value + "</code></pre>";
     }
   }
 

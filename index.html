@@ -55,7 +55,7 @@
       {{#commit.files}}
         <li id="file-{{name}}">
           <h3>{{name}}</h3>
-          {{diffText}}
+          {{{ highlight(diffText) }}}
         </li>
       {{/each}}
     </script>
@@ -81,30 +81,6 @@
         var directory = data[0];
         startApp(directory);
       });
-      // var showHistory = function(d) {
-      //   history.on('commit', function(commit) {
-      //     reviewedEl.addEventListener('click', function (e) {
-      //       reviewed.child(this.sha().slice(0, 6)).set({
-      //         reviewed: true
-      //       });
-      //       e.preventDefault();
-      //     }.bind(commit), false);
-      //   });
-      //
-      //   history.start();
-      //   reviewed.on("value", function (snapshot) {
-      //     if(!snapshot.val()){
-      //       return
-      //     }
-      //     var data = snapshot.val();
-      //     Object.keys(data).forEach(function(sha){
-      //       var commit = document.querySelector("#commit-" + sha);
-      //       if(data[sha].reviewed) {
-      //         commit && commit.classList.add('reviewed');
-      //       }
-      //     })
-      //   })
-      // };
-      </script>
+    </script>
   </body>
 </html>
