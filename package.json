@@ -8,7 +8,7 @@
     "url": "https://github.com/benogle/electron-sample.git"
   },
   "scripts": {
-    "test": "node_modules/.bin/electron . --test"
+    "test": "script/test"
   },
   "compileCacheDir": "./compile-cache",
   "compileDirs": [
