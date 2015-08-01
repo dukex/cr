@@ -17,6 +17,7 @@
   "devDependencies": {
     "electron-compile": "^0.7.0",
     "electron-jasmine": "^0.1.8",
+    "electron-packager": "^5.0.1",
     "electron-prebuilt": "^0.30.1",
     "electron-rebuild": "^0.2.5"
   },
