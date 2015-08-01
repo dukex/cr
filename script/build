@@ -1,15 +1,12 @@
 #!/bin/bash
 
 MODULE_PATH="./node_modules"
-COMPILER_PATH="$MODULE_PATH/.bin/electron-compile"
 PACKAGER_PATH="$MODULE_PATH/.bin/electron-packager"
 PREBUILT_PATH="$MODULE_PATH/electron-prebuilt"
 PREBUILT_PACKAGE_JSON_PATH="$PREBUILT_PATH/package.json"
 PACKAGE_JSON_PATH="package.json"
-
-PATH_TO_COMPILE="./src"
-COMPILE_CACHE_PATH="./compile-cache"
 BUILD_OUTPUT_PATH="./release"
+COMPILE_COMMAND="./script/compile"
 
 IGNORE_PATHS="node_modules/electron-compile/node_modules/electron-compilers|node_modules/\\.bin|node_modules/electron-rebuild|node_modules/electron-jasmine|(/release$)|(/script$)|(/spec$)"
 
@@ -24,6 +21,7 @@ ELECTRON_VERSION=${ELECTRON_VERSION[1]}
 APP_NAME=($( json_value $PACKAGE_JSON_PATH "appName" ))
 APP_NAME=${APP_NAME[1]}
 
+$COMPILE_COMMAND
+
 echo "Building $APP_NAME"
-$COMPILER_PATH --target "$COMPILE_CACHE_PATH" "$PATH_TO_COMPILE"
 $PACKAGER_PATH ./ $APP_NAME --overwrite --platform darwin --arch x64 --version "$ELECTRON_VERSION" --ignore "$IGNORE_PATHS" --out "$BUILD_OUTPUT_PATH" $@
