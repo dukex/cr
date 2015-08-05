@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CR</title>
+    <style>
+      body {
+        color: #333;
+        margin: 0;
+        padding: 0;
+        background: #DDDFE4;
+        font-family: Raleway,"Helvetica Neue", Helvetica;
+        font-weight: 500;
+      }
+
+      h1 {
+        margin: 20px;
+        font-weight: 500;
+        font-size: 23px;
+        color: #454B59;
+        font-weight: 800;
+      }
+
+      h1 span {
+        font-size: 15px;
+        font-weight: 500;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      a {
+        color: #333
+      }
+      p {
+        margin: 0;
+        padding: 0;
+      }
+
+      ol {
+        list-style: none;
+        padding: 0;
+        font-weight: 500;
+        font-size: 18px;
+        margin: 0 20px;
+        overflow: hidden;
+      }
+
+      li {
+        padding: 5px;
+        overflow: hidden;
+        padding: 0;
+        line-height: 25px;
+        background: #FFF;
+        border-bottom: 1px solid  #C9C9CB;
+        box-shadow: 0 1px 2px  #C9C9CB;
+        margin-bottom: 10px;
+        border-radius: 5px;
+      }
+
+      li.reviewed {
+        opacity: 0.6;
+        box-shadow: none;
+        border: 0;
+      }
+
+      img, .commit-data {
+        margin-top: 10px;
+        float: left;
+      }
+
+      img {
+        width: 50px;
+        height: 50px;
+        margin: 10px 10px;
+        border-radius: 5px;
+        float: left;
+      }
+
+      .commit-data__meta {
+        font-size: 14px;
+        font-style: italic;
+        color: #8a8a8a;
+      }
+
+      .actions {
+        clear: both;
+        margin-top: 10px;
+        background: #F1F2F4;
+        border-top: 1px solid #E1e1e1;
+      }
+
+      button {
+        background: #F1F2F4;
+        border: none;
+        height: 40px;
+        font-weight: bold;
+        color: #454B59;
+        cursor: pointer;
+      }
+
+      button.now {
+        color: #333
+      }
+    </style>
+
+  </head>
+  <body>
+    <h1>Uhura Frontend <span>(git@github.com:uhuraapp/uhura-frontend)</span></h1>
+
+    <ol id="commits">
+      <li>
+        <img src="https://randomuser.me/api/portraits/med/men/58.jpg" alt="" />
+        <div class="commit-data">
+          <p class="message">fix login template</p>
+          <p class="commit-data__meta">
+            <time>2 days ago</time>
+            by
+            <a class="author" href="#dukex">dukex</a>
+          </p>
+        </div>
+        <div class="actions">
+          <button class="now">Review Now</button>
+          <button class="delay">Review Later</button>
+          <button>Reviewed</button>
+        </div>
+      </li>
+      <li>
+        <img src="https://randomuser.me/api/portraits/med/women/13.jpg" alt="" />
+        <div class="commit-data">
+          <span class="message">update styles</span>
+          <p class="commit-data__meta">
+            <time>2 days ago</time>
+            by
+            <a class="author" href="#dukex">dukex</a>
+          </p>
+        </div>
+        <div class="actions">
+          <button class="now">Review Now</button>
+          <button class="delay">Review Later</button>
+          <button>Reviewed</button>
+        </div>
+      </li>
+      <li>
+        <img src="https://randomuser.me/api/portraits/med/women/13.jpg" alt="" />
+        <div class="commit-data">
+          <span class="message"> import moment </span>
+          <p class="commit-data__meta">
+            <time>2 days ago</time>
+            by
+            <a class="author" href="#dukex">dukex</a>
+          </p>
+        </div>
+        <div class="actions">
+          <button class="now">Review Now</button>
+          <button class="delay">Review Later</button>
+          <button>Reviewed</button>
+        </div>
+      </li>
+      <li>
+        <img src="https://randomuser.me/api/portraits/med/men/58.jpg" alt="" />
+        <div class="commit-data">
+          <span class="message"> add new routes and template </span>
+          <p class="commit-data__meta">
+            <time>2 days ago</time>
+            by
+            <a class="author" href="#dukex">dukex</a>
+          </p>
+        </div>
+        <div class="actions">
+          <button class="now">Review Now</button>
+          <button class="delay">Review Later</button>
+          <button>Reviewed</button>
+        </div>
+      </li>
+      <li class="reviewed">
+        <img src="https://randomuser.me/api/portraits/med/men/61.jpg" alt="" />
+        <div class="commit-data">
+          <span class="message"> add email/password and oauth0 login </span>
+          <p class="commit-data__meta">
+            <time>2 days ago</time>
+            by
+            <a class="author" href="#dukex">dukex</a>
+          </p>
+        </div>
+        <div class="actions">
+          <button class="now">Review Again</button>
+        </div>
+      </li>
+      <li class="reviewed">
+        <img src="https://randomuser.me/api/portraits/med/women/74.jpg" alt="" />
+        <div class="commit-data">
+          <span class="message"> update locationType config to auto </span>
+          <p class="commit-data__meta">
+            <time>2 days ago</time>
+            by
+            <a class="author" href="#dukex">dukex</a>
+          </p>
+        </div>
+        <div class="actions">
+          <button class="now">Review Again</button>
+        </div>
+      </li>
+      <li>
+        <img src="https://randomuser.me/api/portraits/med/men/58.jpg" alt="" />
+        <div class="commit-data">
+          <span class="message"> remove more code </span>
+          <p class="commit-data__meta">
+            <time>2 days ago</time>
+            by
+            <a class="author" href="#dukex">dukex</a>
+          </p>
+        </div>
+        <div class="actions">
+          <button class="now">Review Now</button>
+          <button class="delay">Review Later</button>
+          <button>Reviewed</button>
+        </div>
+      </li>
+    </ol>
+
+<script type="text/javascript">
+  WebFontConfig = {
+    google: { families: [ 'Raleway:700,800,500:latin' ] }
+  };
+  (function() {
+    var wf = document.createElement('script');
+    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+    wf.type = 'text/javascript';
+    wf.async = 'true';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+  })(); </script>
+  </body>
+</html>

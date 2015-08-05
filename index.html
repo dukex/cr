@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CR</title>
+    <style>
+      body {
+        color: #333;
+        margin: 0;
+        padding: 0;
+        background: #DDDFE4;
+        font-family: Raleway,"Helvetica Neue", Helvetica;
+        font-weight: 500;
+      }
+
+      h1 {
+        margin: 20px;
+        font-weight: 500;
+        font-size: 23px;
+        color: #454B59;
+        font-weight: 800;
+      }
+
+      h1 span {
+        font-size: 15px;
+        font-weight: 500;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .drop-area-container {
+        position: absolute;
+        top: 20px;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        cursor: pointer;
+      }
+
+      p, button {
+        text-align: center;
+        font-weight: 400;
+        color:  #646465;
+      }
+
+      button {
+        display: block;
+        margin: 0 auto;
+        background: #454B59;
+        color: #FFF;
+        border: none;
+        padding: 10px;
+        border-radius: 2px;
+        cursor: pointer;
+        box-shadow: 1px 1px 1px #999
+      }
+
+
+
+      .drop-area {
+        border-radius: 5px;
+        text-align: center;
+        height: 60%;
+        border: 4px dashed #999;
+        background: #C9C9CB;
+
+      }
+
+      img {
+        margin: 20px;
+        height: 50%;
+        opacity: 0.5
+      }
+
+      </style>
+
+  </head>
+
+  <body>
+    <div class="drop-area-container" onclick="window.location='proto-index.html'">
+
+      <div class="drop-area">
+        <img src="./Git-Icon-Black.png" alt="" />
+        <p>Drag a repository here</o>
+      </div>
+
+      <p>or</p>
+
+      <button>Open folder...</button>
+    </div>
+
+    <script type="text/javascript">
+  WebFontConfig = {
+    google: { families: [ 'Raleway:700,800,500:latin' ] }
+  };
+  (function() {
+    var wf = document.createElement('script');
+    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+    wf.type = 'text/javascript';
+    wf.async = 'true';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+  })(); </script>
+  </body>
+</html>
