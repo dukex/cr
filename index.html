@@ -1,86 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Hello World!</title>
+    <title></title>
     <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="assets/app.css" media="screen" title="no title" charset="utf-8">
     <link rel="stylesheet" href="./node_modules/highlight.js/styles/monokai_sublime.css" media="screen" title="no title" charset="utf-8">
   </head>
   <body>
-    <div id="app">
-    </div>
-
-    <script id="commits-template" type="text/ractive">
-      <button on-click="all_reviewed">Mark all as reviewed</button>
-      <label>
-        Filters
-        <input value='{{search}}' type="text">
-        ex: 'reviewed: true' can combine using coma(,) 'reviewed: true, author: Duke'
-      </label>
-      <ul id="commits">
-        {{#each filter(commits, search) :index}}
-          <li id="commit-{{sha}}" data-i='{{index}}' class='{{ reviewed ? "reviewed" : "" }}'>
-            <b>{{sha_short}}</b>
-            <span class="author">{{author}}</span>
-            -
-            {{message_shot}}
-            <span class="date">{{date}}</span>
-            <button on-click="reviewed" data-id="{{sha}}">Mark as reviewed</button>
-            <button on-click="review">Review</button>
-          </li>
-        {{/each}}
-      </ul>
-    </script>
-
-    <script id="commit-template" type="text/x-handlebars-template">
-      <button on-click="back">Voltar</button>
-      <h1>
-        <b>{{commit.sha_short}}</b>
-        <span class="author">{{commit.author}}</span>
-        -
-        {{commit.message}}
-        <span class="date">{{commit.date}}</span>
-
-        <button>Mark as reviewed</button>
-      </h1>
-
-      <ul>
-      {{#commit.files}}
-        <li><a href="#file-{{name}}">{{name}}</a></li>
-      {{/each}}
-      </ul>
-
-      <ul>
-      {{#commit.files}}
-        <li id="file-{{name}}">
-          <h3>{{name}}</h3>
-          {{{ highlight(diffText) }}}
-        </li>
-      {{/each}}
-    </script>
-
-    <script type="text/javascript">
-      window.RSVP = require('./assets/vendor/rsvp.js');
-      window.RouteRecognizer = require('./assets/vendor/route-recognizer.js');
-    </script>
-
-    <script src="assets/vendor/ractive.js" charset="utf-8"></script>
-    <script src="assets/vendor/router.js" charset="utf-8"></script>
-    <script src="assets/string.js" charset="utf-8"></script>
-    <script src="assets/diff.js" charset="utf-8"></script>
-    <script src="assets/controllers.js" charset="utf-8"></script>
-    <script src="assets/router.js" charset="utf-8"></script>
-    <script src="assets/app.js" charset="utf-8"></script>
-
-    <script type="text/javascript">
-      var moment = require('moment');
-
-      var ipc = require('ipc');
-      ipc.on('open', function(data) {
-        var directory = data[0];
-        startApp(directory);
-      });
-    </script>
   </body>
 </html>
