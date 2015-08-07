@@ -1,31 +1,23 @@
-var app = require('app');
-var BrowserWindow = require('browser-window');
+var path = require('path')
+var argv = require('yargs')
+  .default('test', false)
+  .default('environment', 'production')
+  .argv
 
-require('crash-reporter').start();
-
-var mainWindow = null;
-process.on('error', function(err) {
-  console.log(err);
-});
-
-app.on('window-all-closed', function() {
-  if (process.platform != 'darwin') {
-    app.quit();
+if (argv.test) {
+  require('electron-compile').init()
+  var TestApplication = require('electron-jasmine').TestApplication
+  new TestApplication({specDirectory: './spec'})
+}
+else {
+  if (argv.environment == 'production') {
+    require('electron-compile').initForProduction(path.join(__dirname, 'compile-cache'))
   }
-});
+  else {
+    console.log('In development mode')
+    require('electron-compile').init()
+  }
 
-app.on('ready', function() {
-  mainWindow = new BrowserWindow({width: 800, height: 800});
-
-  mainWindow.loadUrl('file://' + __dirname + '/index.html');
-
-  mainWindow.openDevTools();
-  mainWindow.webContents.on('did-finish-load', function() {
-    var dialog = require('dialog');
-    mainWindow.webContents.send('open', dialog.showOpenDialog({ properties: [ 'openDirectory' ]}));
-  });
-
-  mainWindow.on('closed', function() {
-    mainWindow = null;
-  });
-});
+  var Application = require('./src/browser/application')
+  new Application
+}
