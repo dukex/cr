@@ -95,14 +95,96 @@
       button.now {
         color: #333
       }
+
+      .headroom {
+      }
+
+      /* head headroom headroom--not-top headroom--unpinned */
+
+      .headroom--unpinned{
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        margin: 0;
+        border-radius: 0;
+        width: auto;
+      }
+
+      .headroom--unpinned .commit-data{
+        margin: 0;
+        padding: 5px;
+        padding-bottom: 0
+      }
+
+      .headroom--unpinned .commit-data p{
+        display: inline;
+      }
+
+      .headroom--unpinned img {
+        display: inline;
+        width: auto;
+        height: 35px;
+        margin: 0;
+        border-radius: 0;
+      }
+      .headroom--unpinned + .index{
+        margin-top: 140px;
+      }
+
+      .index ul {
+        margin: 10px;
+        margin-top: 20px;
+        padding: 0;
+        font-weight: 700;
+        list-style: none;
+      }
+      .index ul li {
+        margin-bottom:  10px;
+
+      }
+      .index ul li a {
+        text-decoration: none;
+        display: block;
+        text-shadow: 1px 1px 1px #FFF;
+        padding: 5px;
+      }
+
+      .index a:hover {
+        background: #F7F7F7;
+      }
+
+      .index a span {
+        font-weight: normal;
+        font-size: 13px;
+      }
+
+      span.deleted {
+        color: #990000
+      }
+
+      span.added {
+        color: #009900
+      }
+
+      pre {
+        border-top: 1px dashed #333;
+        padding-top: 5px;
+      }
+
+      span.file-name {
+        display: inline-block;
+        padding: 5px;
+      }
+
     </style>
     <script>
       hljs.configure({useBR: true});
     </script>
   </head>
   <body>
-      <div class="head">
-        <img src="https://randomuser.me/api/portraits/med/men/58.jpg" alt="" />
+      <div class="head headroom">
+        <img src="https://s3.amazonaws.com/uifaces/faces/twitter/zakiwarfel/128.jpg" alt="" />
         <div class="commit-data">
           <p class="message">fix login template</p>
           <p class="commit-data__meta">
@@ -112,14 +194,42 @@
           </p>
         </div>
         <div class="actions">
-          <button class="now" onclick="window.location='proto-review.html'">Review Now</button>
           <button class="delay">Review Later</button>
           <button>Reviewed</button>
         </div>
       </div>
 
-      <div class="patch">
+      <div class="index">
+        <ul>
+          <li>
+            <a href="#file">
+              app/templates/login.hbs
+              <p><span class="deleted">-1,28</span> <span class="added">+1,36</span></p>
+            </a>
+          </li>
+          <li>
+            <a href="#end">
+              app/routes/login.js
+              <p><span class="deleted">-1,2</span> <span class="added">+1,6</span></p>
+            </a>
+          </li>
+          <li>
+            <a href="#end">
+              app/controller/login.js
+              <p><span class="deleted">-1,20</span> <span class="added">+1,16</span></p>
+            </a>
+          </li>
+          <li>
+            <a href="#end">
+              .gitignore
+              <p><span class="deleted">-1,8</span> <span class="added">+1,22</span></p>
+            </a>
+          </li>
+        </ul>
+      </div>
 
+      <div class="patch">
+        <div id="file"></div>
       </div>
 
 
@@ -177,12 +287,21 @@
 
  {{partial "meta/organization"}}
 </script>
+
+<div id="end" />
+    <script src="headroom.js" charset="utf-8"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function(event) {
         var code = document.querySelector("#code-1");
-        var diff =  "<pre><code class='hljs'>" + hljs.highlight("diff", code.innerHTML).value + "</code></pre>";
-        var patch = document.querySelector(".patch")
+        var diff =  "<pre><span class='file-name'>app/templates/login.hbs</span>  <code class='hljs'>" + hljs.highlight("diff", code.innerHTML).value + "</code></pre>";
+        var patch = document.querySelector("#file")
         patch.innerHTML = diff;
+
+        var myElement = document.querySelector(".head");
+// construct an instance of Headroom, passing the element
+var headroom  = new Headroom(myElement);
+// initialise
+headroom.init();
       });
     </script>
   </body>
