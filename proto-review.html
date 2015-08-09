@@ -5,7 +5,7 @@
     <title>CR</title>
 
 
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/styles/default.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/styles/monokai.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/highlight.min.js"></script>
 
     <style>
@@ -97,8 +97,7 @@
       }
     </style>
     <script>
-          hljs.configure({useBR: true});
-          hljs.initHighlightingOnLoad();
+      hljs.configure({useBR: true});
     </script>
   </head>
   <body>
@@ -120,7 +119,11 @@
       </div>
 
       <div class="patch">
-<pre><code class="diff">
+
+      </div>
+
+
+<script id="code-1" type="text/code">
 @@ -1,28 +1,36 @@
  {{outlet 'modal'}}
 
@@ -173,8 +176,14 @@
  </div>
 
  {{partial "meta/organization"}}
- </code></pre>
-      </div>
-
+</script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function(event) {
+        var code = document.querySelector("#code-1");
+        var diff =  "<pre><code class='hljs'>" + hljs.highlight("diff", code.innerHTML).value + "</code></pre>";
+        var patch = document.querySelector(".patch")
+        patch.innerHTML = diff;
+      });
+    </script>
   </body>
 </html>
