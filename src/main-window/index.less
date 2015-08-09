@@ -5,3 +5,55 @@
 html, body {
   font-family: Helvetica, Arial, sans-serif;
 }
+
+body {
+  color: #333;
+  margin: 0;
+  padding: 0;
+  background: #FFF;
+  font-family: Raleway,"Helvetica Neue", Helvetica;
+  font-weight: 500;
+}
+
+#dropzone-container {
+  position: absolute;
+  top: 20px;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+
+  p, button {
+    text-align: center;
+    font-weight: 400;
+    color:  #646465;
+  }
+
+  button {
+    display: block;
+    margin: 0 auto;
+    background: #454B59;
+    color: #FFF;
+    border: none;
+    padding: 10px;
+    border-radius: 2px;
+    box-shadow: 1px 1px 1px #999
+  }
+
+  img {
+    margin: 20px;
+    height: 50%;
+    opacity: 0.5
+  }
+
+}
+
+#dropzone {
+  border-radius: 5px;
+  text-align: center;
+  height: 80%;
+  border: 4px dashed #999;
+  background: #C9C9CB;
+  &.hover {
+    background: #a2d49f;
+  }
+}

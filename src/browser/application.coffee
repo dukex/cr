@@ -19,16 +19,14 @@ class Application
 
     @windows = []
 
-  ready: =>
-    @openWindow()
+  ready: => @openWindow()
 
   openWindow: ->
     win = new ApplicationWindow("file://#{__dirname}/../main-window/index.html", {width: 1200, height: 800})
     @addWindow(win)
 
   # Public: Removes the window from the global window list.
-  removeWindow: (window) ->
-    @windows.splice @windows.indexOf(window), 1
+  removeWindow: (window) -> @windows.splice @windows.indexOf(window), 1
 
   # Public: Adds the window to the global window list.
   addWindow: (window) ->

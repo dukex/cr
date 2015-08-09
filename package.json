@@ -19,7 +19,9 @@
     "electron-jasmine": "^0.1.8",
     "electron-packager": "^5.0.1",
     "electron-prebuilt": "^0.30.2",
-    "electron-rebuild": "^0.2.5"
+    "electron-rebuild": "^0.2.5",
+    "react": "^0.13.3",
+    "react-router": "^0.13.3"
   },
   "dependencies": {
     "yargs": "^3.16.1"
