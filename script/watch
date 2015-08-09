@@ -1,0 +1,4 @@
+#!/bin/bash
+
+
+jsx --watch src/main-window/app src/main-window/js
