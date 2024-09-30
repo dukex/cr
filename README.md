@@ -1,7 +1,5 @@
 # Code Review
 
-## Donate to 1P8ccYhVt4ByLahuVXiCY6U185gmYA8Rqf
-
 ![](https://raw.githubusercontent.com/dukex/cr/master/cr.png)
 
 :no_entry_sign: this is a work in progress. It will change. Don't use it yet.
